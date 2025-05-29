@@ -218,7 +218,7 @@ function draw() {
     let alpha = 255 - count * 50;
     tint(255, alpha);*/
 
-    tint(255, 255, 255, 50);
+    tint(255, 255, 255, 10);
     image(bg, 0, 0, width, height);
     blend(bg, 0, 0, bg.width, bg.height, 0, 0, width, height, LIGHTEST);
 
