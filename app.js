@@ -126,7 +126,7 @@ function draw() {
   // 전시 시간 설정  9시~22시
   let now = hour();
 
-  if (now > 9 && now < 22) {    
+  if (now >= 9 && now < 22) {    
     frameRate(60);
   } else {
     background(0, 0, 0);  // 전력을 가장 낮춘다. 
@@ -218,8 +218,8 @@ function draw() {
     let alpha = 255 - count * 50;
     tint(255, alpha);*/
 
-    tint(255, 255, 255, 10);
-    image(bg, 0, 0, width, height);
+    //tint(255, 255, 255, 50);
+   // image(bg, 0, 0, width, height);
     blend(bg, 0, 0, bg.width, bg.height, 0, 0, width, height, LIGHTEST);
 
     /*fill(255, 255);
