@@ -1,5 +1,7 @@
 let password = '0000'; // 원하는 비밀번호로 수정
 let enteredPassword = '';
+let startHour = 10; // 전시 시간 설정 
+let endHour = 20;
 
 function checkPassword() {
   enteredPassword = document.getElementById('password').value;
@@ -20,6 +22,41 @@ function checkPassword() {
     alert('Incorrect password');
   }
 }
+
+function loadExhibitionTime() {
+  const savedStart = localStorage.getItem('startHour');
+  const savedEnd = localStorage.getItem('endHour');
+  if (savedStart !== null) startHour = parseInt(savedStart);
+  if (savedEnd !== null) endHour = parseInt(savedEnd);
+
+  document.getElementById('start-hour').value = startHour;
+  document.getElementById('end-hour').value = endHour;
+}
+
+function saveExhibitionTime() {
+  const s = parseInt(document.getElementById('start-hour').value);
+  const e = parseInt(document.getElementById('end-hour').value);
+
+
+  if (s < e) {
+    startHour = s;
+    endHour = e;
+    localStorage.setItem('startHour', startHour);
+    localStorage.setItem('endHour', endHour);
+    alert('전시 시간이 ' + startHour + '-' + endHour + '시로 저장되었습니다.');
+  } else {
+    alert('전시 시간 설정이 잘못되었습니다다.');
+  }
+}
+
+function changeHour(type, delta) {
+  const input = document.getElementById(`${type}-hour`);
+  let val = parseInt(input.value || '0') + delta;
+  if (val < 0) val = 24;
+  if (val > 24) val = 0;
+  input.value = val;
+}
+
 
 // 여기서부터는 원래 p5.js 코드
 let yoff = 10; // 2nd dimension of perlin noise
