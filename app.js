@@ -7,17 +7,21 @@ function checkPassword() {
   enteredPassword = document.getElementById('password').value;
 
   if (enteredPassword === password) {
-    //포커스 해제해서 키보드 내려가게 함 
-    document.activeElement.blur();
+ 
+    document.activeElement.blur(); // 키보드 내려가기
 
-    //다음 프레임에 화면을 고정
     setTimeout(() => {
-      document.getElementById('password-form').style.display = 'none';
-      document.getElementById('password-form').innerHTML = ''; //html구조제거 
-      document.getElementById('art-container').style.display = 'block';
+      const form = document.getElementById('password-form');
+      form.style.display = 'none';
+      form.innerHTML = '';
 
+      const form2 = document.getElementById('time-setting-form');
+      form2.style.display = 'none';
+      form2.innerHTML = '';
+
+      document.getElementById('art-container').style.display = 'block';
       initializeArt();
-    }, 50); //50~100ms사이 안전 
+    }, 50);
   } else {
     alert('Incorrect password');
   }
@@ -159,6 +163,12 @@ function handleReleased() {
 }
 
 function draw() {
+
+  /*  // 설정시간 로그 
+  fill(255);
+  textSize(20);
+  text("satrtHour: " + startHour, 100, 200);
+  text("endHour: " + endHour, 100, 250);*/
  
   // 전시 시간 설정  9시~22시
   let now = hour();

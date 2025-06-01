@@ -19,7 +19,7 @@
   <script language="javascript" type="text/javascript" src="app.js"></script>
   <!-- OK, YOU CAN MAKE CHANGES BELOW THIS LINE AGAIN -->
   <script language="javascript" type="text/javascript" src="libraries/p5.sound.min.js"></script>
-  <style>
+ <style>
     html,
     body {
       position: relative;
@@ -37,7 +37,7 @@
       top: 0;
       left: 0;
       font-family: Arial, sans-serif;
-      background-color: #000000;
+      background-color: #02b39b;
     }
 
     canvas {
@@ -82,7 +82,6 @@
       margin-bottom: 10px;
     }
 
-
     #art-container {
       margin: 0;
       padding: 0;
@@ -107,7 +106,6 @@
       text-align: center;
     }
 
-
     #time-setting-form {
       display: flex;
       flex-direction: column;
@@ -115,7 +113,6 @@
       margin: 100px auto;
       text-align: center;
     }
-
 
     input,
     button {
@@ -130,7 +127,15 @@
     }
 
     button:hover {
-      background-color: #2980b9;
+      background-color: #33f1e8;
+    }
+
+    .time-row {
+      margin: 10px 0;
+    }
+
+    label {
+      margin-right: 5px;
     }
   </style>
 
@@ -165,7 +170,6 @@
       <button onclick="checkPassword()">Submit</button>
     </div>
   </div>
-
 
   <script>
     // 캔버스 외부 터치에 대해 기본 동작 방지
@@ -207,6 +211,8 @@
     window.addEventListener('scroll', () => {
       if (window.scrollY !== 0) window.scrollTo(0, 0);
     });
+
+    window.addEventListener('DOMContentLoaded', loadExhibitionTime);
 
     // p5.js에서 터치 이벤트 처리
     function touchStarted() {
