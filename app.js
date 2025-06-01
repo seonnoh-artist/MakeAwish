@@ -173,7 +173,7 @@ function draw() {
   // 전시 시간 설정  9시~22시
   let now = hour();
 
-  if (now >= 9 && now < 22) {    
+  if (now >= startHour && now < endHour) {    
     frameRate(60);
   } else {
     background(0, 0, 0);  // 전력을 가장 낮춘다. 
