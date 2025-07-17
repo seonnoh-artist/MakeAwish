@@ -94,6 +94,7 @@ let green_value = 0; // 투명
 let stroke_value = 1;
 let waveAmp = 0; // 현재 파도 크기
 let decayRate = 0.95 // 작아지는 속도 0.95
+let lastRestartedTime=0;
 
 
 // ==================== 기기 감지 ====================
@@ -456,7 +457,7 @@ function draw() {
   vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
   x_value = max(10, 30 - vol_wave_scale * 10); // 진폭을 마이크값으로 조정
   waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
-  waveHeight = vol * 100; //ㅅㄷㄴㅅ
+  waveHeight = vol_wave_scale * 100; //ㅅㄷㄴㅅ
   green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
   stroke_value = max(1, 1 + vol_wave_scale);
 

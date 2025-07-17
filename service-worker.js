@@ -15,7 +15,7 @@ const urlsToCache = [
   './data/star3.png',
   './data/star4.png'
 ];
-/*
+
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -32,4 +32,4 @@ self.addEventListener('fetch', function (event) {
         return response || fetch(event.request);
       })
   );
-});*/
+});
