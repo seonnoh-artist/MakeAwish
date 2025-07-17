@@ -91,7 +91,9 @@ let freezeCount = 0;
 let vol_wave_scale = 0;
 let waveHeight = 0; // 파도의 높이를 마이크로 조정
 let green_value = 0; // 투명
-let stroke_value =1;
+let stroke_value = 1;
+let waveAmp = 0; // 현재 파도 크기
+let decayRate = 0.95 // 작아지는 속도 0.95
 
 
 // ==================== 기기 감지 ====================
@@ -108,7 +110,7 @@ function detectDevice() {
     micSensitivity = 0.05;
     log_str = "iPhone";
   } else {
-    micSensitivity = 0.3;
+    micSensitivity = 0.01;
     log_str = "ETC";
   }
 
@@ -281,9 +283,6 @@ function draw() {
     return;
   }
 
-
-
-
   /*//테스트용   
     let now = minute() % 2;
   
@@ -317,7 +316,6 @@ function draw() {
   }
 
   monitorMic(); //마이크 모니터링
-
   vol = mic.getLevel();
 
   /*
@@ -404,7 +402,7 @@ function draw() {
       }
     }
   } else {
-    if (count > -200) {
+    if (count > -50) {
       //100만큼 기다렸다가 파도 그린다.
       count--;
       yoff = 0;
@@ -415,7 +413,7 @@ function draw() {
 
   //동그라미 그린다. 
   noStroke();
-  for (let i = 0; i <1; i++) {  //여러번 그린다...........25.7.17
+  for (let i = 0; i < 1; i++) {  //여러번 그린다...........25.7.17
     //  console.log('count' + count);
     let b_x = int(random(0, bg.width));
     let b_y = int(random(0, bg.height));
@@ -447,23 +445,39 @@ function draw() {
   //파도를 그린다.
   // 마이크 베리에이션 
 
+  //소리가 클때만 waveAmp갱신
+  let volPower = pow(vol, 1.5)*300;
+  if(volPower >waveAmp){
+     waveAmp = volPower;
+  }
+
+  waveAmp *=decayRate; // 시간에 따라 소리가 작아진다. 
+
   vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
   x_value = max(10, 30 - vol_wave_scale * 20); // 진폭을 마이크값으로 조정
-  waveHeight = map(vol, 0, micSensitivity, 30, 200, true); // 파도의 높이를 마이크로 조정
+  waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
+  waveHeight = vol * 100; //ㅅㄷㄴㅅ
   green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
-  stroke_value = max(1, 1+ vol_wave_scale);
+  stroke_value = max(1, 1 + vol_wave_scale);
 
   strokeWeight(stroke_value);
   noFill();
   strokeJoin(ROUND); //선을 부드럽게
   //stroke(0, 160, 180, alpha);*/
+  let b = map(vol, 0,micSensitivity, 200, 255 ); //blue
+  b = 255;
+  let g = map(vol, 0, micSensitivity, 100, 200); //green
+//  let a = map(vol, 0, micSensitivity, 100, 255);//alpha
+  a=40;
+  //stroke(0, g, b, a); //어두운 청록 ~밝은 푸른빛 
 
 
   if (wave_chk == true) {
     t += 0.01;
     let alpha = map(sin(t), -1, 1, 30, 100);
     //  stroke(0, 160, 180, alpha);
-    stroke(0, green_value, 180, alpha);
+    stroke(0, g, b, alpha);
+    //stroke(0, g, b, a); //어두운 청록 ~밝은 푸른빛 
     if (t > 360) t = 0;
 
     /* fill(255);
@@ -480,7 +494,7 @@ function draw() {
     for (let x = 0; x <= width; x += x_value) {
       // Calculate a y value according to noise, map to
       //let y = map(noise(xoff, yoff), 0, 1, height * 0.5, height * 0.7) ;// Option #1: 2D Noise    
-      let y = map(noise(xoff, yoff), 0, 1, height * 0.5 - waveHeight / 2, height * 0.7 + waveHeight / 2); // 파도의높이를 조정 마이크로. 
+      let y = map(noise(xoff, yoff), 0, 1, height * 0.5 - waveAmp, height * 0.7 + waveAmp); // 파도의높이를 조정 마이크로. 
       end_y = y;
       // Set the vertex
       vertex(x, y);
@@ -526,3 +540,37 @@ if ('serviceWorker' in navigator) {
       console.log('Service Worker registration failed:', error);
     });
 }
+
+// ======마이크 활성화로 캐싱 날아감 방지
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // 앱이 백그라운드로 갔을 때
+    if (mic) {
+      mic.stop();
+      mic = null;
+      started = false;
+      console.log('🔇 마이크 꺼짐 (앱 백그라운드)');
+    }
+
+    if (getAudioContext().state === 'running') {
+      getAudioContext().suspend();
+    }
+
+  } else {
+    // 앱이 다시 포그라운드로 왔을 때
+    userStartAudio().then(() => {
+      if (!mic) {
+        mic = new p5.AudioIn();
+        mic.start(() => {
+          started = true;
+          console.log('🎤 마이크 다시 켜짐 (앱 포그라운드)');
+        });
+      }
+
+      if (getAudioContext().state !== 'running') {
+        getAudioContext().resume();
+      }
+    });
+  }
+});
