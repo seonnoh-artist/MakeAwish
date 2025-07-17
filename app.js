@@ -7,7 +7,7 @@ function checkPassword() {
   enteredPassword = document.getElementById('password').value;
 
   if (enteredPassword === password) {
- 
+
     document.activeElement.blur(); // 키보드 내려가기
 
     setTimeout(() => {
@@ -81,6 +81,52 @@ let lastTouchtime = 0;
 let touchTimeout = 300; //ms ,  터치 종료로 간주할 시간 
 let touch_chk = false;
 
+// 마이크 기능 추가 25.7.17
+let mic;
+let vol = 0;
+let started = false;
+let micSensitivity = 0.02;
+let lastVol = 0;
+let freezeCount = 0;
+let vol_wave_scale = 0;
+let waveHeight = 0; // 파도의 높이를 마이크로 조정
+let green_value = 0; // 투명
+let stroke_value =1;
+
+
+// ==================== 기기 감지 ====================
+
+function detectDevice() {
+  const ua = navigator.userAgent.toLowerCase();
+  const isIpad = ua.includes("ipad") || (ua.includes("macintosh") && 'ontouchend' in document);
+  const isIphone = ua.includes("iphone");
+
+  if (isIpad) {
+    micSensitivity = 0.005;
+    log_str = "iPad";
+  } else if (isIphone) {
+    micSensitivity = 0.05;
+    log_str = "iPhone";
+  } else {
+    micSensitivity = 0.3;
+    log_str = "ETC";
+  }
+
+  console.log("Device detected → micSensitivity:", micSensitivity);
+}
+
+function printLog() {
+  /*
+  fill(255);
+  textSize(20);
+  text(log_str, 100, 100);
+  let volume_str = mic.getLevel();
+  text("vol: " + nf(volume_str, 1, 6), 100, 300);
+  text("satrtHour: " + startHour, 100, 200);
+  text("endHour: " + endHour, 100, 250);*/
+}
+
+
 //별 그리기 클래스
 class star {
   constructor(p_star, size, p_x, p_y) {
@@ -150,6 +196,9 @@ function initializeArt() {
   }
   console.log('group_star.length = ', group_star.length);
   console.log('group_star[0] =', group_star[0]);
+
+  detectDevice();  // 마이크 기능 추가 
+
 }
 
 function handleReleased() {
@@ -162,6 +211,53 @@ function handleReleased() {
   text("released... ", 200, 50);  */
 }
 
+// ==================== 마이크 활성화 ====================
+function mousePressed() {
+  if (!started) {
+    userStartAudio().then(() => {
+      mic = new p5.AudioIn();
+      mic.start();
+      started = true;
+    });
+  }
+}
+//=======================마이크 재활성화=====================
+function restartMic() {
+
+  fill(255);
+  textSize(32);
+  text("마이크재시작.", w, h);
+  if (mic) {
+    mic.stop(); //기존 마이크 중지
+  }
+  mic = new p5.AudioIn();
+  mic.start();
+  started = true;
+}
+//======================마이크 모니터링=======================
+function monitorMic() {
+  let currentVol = mic.getLevel();
+  if (currentVol === lastVol) {
+    freezeCount++;
+  } else {
+    freezeCount = 0;
+  }
+  lastVol = currentVol;
+
+  const now = millis();
+  if (freezeCount > 100 && (now - lastRestartedTime) > 3000) {
+    console.warn("마이크 재시작 시도");
+    restartMic();
+    freezeCount = 0;
+    lastRestartedTime = now;
+  }
+
+  if (getAudioContext().state !== 'running') {   //오디오 컨텍스트 중단시 재시작(중요)
+    userStartAudio();
+  }
+}
+
+
 function draw() {
 
   /*  // 설정시간 로그 
@@ -169,11 +265,11 @@ function draw() {
   textSize(20);
   text("satrtHour: " + startHour, 100, 200);
   text("endHour: " + endHour, 100, 250);*/
- 
+
   // 전시 시간 설정  9시~22시
   let now = hour();
 
-  if (now >= startHour && now < endHour) {    
+  if (now >= startHour && now < endHour) {
     frameRate(60);
   } else {
     background(0, 0, 0);  // 전력을 가장 낮춘다. 
@@ -184,6 +280,7 @@ function draw() {
     frameRate(1);
     return;
   }
+
 
 
 
@@ -209,6 +306,19 @@ function draw() {
     bg.loadPixels();
     return;
   }
+
+
+  // 마이크 기능을 추가
+  if (!started) {
+    fill(255);
+    textSize(32);
+    text("화면을 클릭해 마이크 호출해 주세요.", width / 2, height / 2);
+    return;
+  }
+
+  monitorMic(); //마이크 모니터링
+
+  vol = mic.getLevel();
 
   /*
   fill(255, 0, 0, 255);
@@ -266,7 +376,7 @@ function draw() {
     tint(255, alpha);*/
 
     //tint(255, 255, 255, 50);
-   // image(bg, 0, 0, width, height);
+    // image(bg, 0, 0, width, height);
     blend(bg, 0, 0, bg.width, bg.height, 0, 0, width, height, LIGHTEST);
 
     /*fill(255, 255);
@@ -305,7 +415,7 @@ function draw() {
 
   //동그라미 그린다. 
   noStroke();
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i <1; i++) {  //여러번 그린다...........25.7.17
     //  console.log('count' + count);
     let b_x = int(random(0, bg.width));
     let b_y = int(random(0, bg.height));
@@ -314,7 +424,9 @@ function draw() {
     let p_red = bg.pixels[b_loc + 0];
     let p_green = bg.pixels[b_loc + 1];
     let p_blue = bg.pixels[b_loc + 2];
-    fill(p_red, p_green, p_blue, 20); //투명도는 20으로 낮게 설정
+    fill(p_red, p_green, p_blue, 20); //투명도는 10d으로 낮게 설정
+    b_x = map(b_x, 0, bg.width, 0, width);
+    b_y = map(b_y, 0, bg.height, 0, height);
     ellipse(b_x, b_y, ran_rid, ran_rid);
   }
 
@@ -330,10 +442,28 @@ function draw() {
     x_value = 30;
   }
 
+
+  noFill();
   //파도를 그린다.
+  // 마이크 베리에이션 
+
+  vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
+  x_value = max(10, 30 - vol_wave_scale * 20); // 진폭을 마이크값으로 조정
+  waveHeight = map(vol, 0, micSensitivity, 30, 200, true); // 파도의 높이를 마이크로 조정
+  green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
+  stroke_value = max(1, 1+ vol_wave_scale);
+
+  strokeWeight(stroke_value);
+  noFill();
+  strokeJoin(ROUND); //선을 부드럽게
+  //stroke(0, 160, 180, alpha);*/
+
+
   if (wave_chk == true) {
     t += 0.01;
     let alpha = map(sin(t), -1, 1, 30, 100);
+    //  stroke(0, 160, 180, alpha);
+    stroke(0, green_value, 180, alpha);
     if (t > 360) t = 0;
 
     /* fill(255);
@@ -342,11 +472,6 @@ function draw() {
     //웨이브 체크가 켜질때 (터치이후 약간의 텀을 준다
     //stroke(0, 0, 255, 10);
     //  let c = color(0, 160, 180);
-    noFill();
-    strokeWeight(1);
-    //stroke(6, 126, 243, alpha);
-    stroke(0, 160, 180, alpha);
-    strokeJoin(ROUND); //선을 부드럽게
     // We are going to draw a polygon out of the wave points
     beginShape();
     //이벤트가 없는 상태엥서 파도를 그린다.
@@ -354,7 +479,8 @@ function draw() {
     let end_y = 0;
     for (let x = 0; x <= width; x += x_value) {
       // Calculate a y value according to noise, map to
-      let y = map(noise(xoff, yoff), 0, 1, height * 0.5, height * 0.7) // Option #1: 2D Noise
+      //let y = map(noise(xoff, yoff), 0, 1, height * 0.5, height * 0.7) ;// Option #1: 2D Noise    
+      let y = map(noise(xoff, yoff), 0, 1, height * 0.5 - waveHeight / 2, height * 0.7 + waveHeight / 2); // 파도의높이를 조정 마이크로. 
       end_y = y;
       // Set the vertex
       vertex(x, y);
