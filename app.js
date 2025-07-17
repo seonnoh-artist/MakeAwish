@@ -402,7 +402,7 @@ function draw() {
       }
     }
   } else {
-    if (count > -50) {
+    if (count > -200) {
       //100만큼 기다렸다가 파도 그린다.
       count--;
       yoff = 0;
