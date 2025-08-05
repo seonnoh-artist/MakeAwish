@@ -455,7 +455,7 @@ function draw() {
   waveAmp *=decayRate; // 시간에 따라 소리가 작아진다. 
 
   vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
-  x_value = max(10, 30 - vol_wave_scale * 20); // 진폭을 마이크값으로 조정
+  x_value = max(10, 30 - vol_wave_scale * 10); // 진폭을 마이크값으로 조정
   waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
   waveHeight = vol_wave_scale * 100; //ㅅㄷㄴㅅ
   green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
