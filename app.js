@@ -459,7 +459,7 @@ function draw() {
   waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
   waveHeight = vol_wave_scale * 100; //ㅅㄷㄴㅅ
   green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
-  stroke_value = max(1, 1 - vol_wave_scale);
+  stroke_value = max(1, 1 + vol_wave_scale);
 
   strokeWeight(stroke_value);
   noFill();
