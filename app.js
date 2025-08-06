@@ -106,7 +106,7 @@ function detectDevice() {
   const isIphone = ua.includes("iphone");
 
   if (isIpad) {
-    micSensitivity = 0.005*5; //0.005
+    micSensitivity = 0.1; //0.005
     log_str = "iPad";
     deviceNum = 0;  //아이패드
   } else if (isIphone) {
