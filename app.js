@@ -229,10 +229,6 @@ function mousePressed() {
 }
 //=======================마이크 재활성화=====================
 function restartMic() {
-
-  fill(255);
-  textSize(32);
-  text("마이크재시작.", w, h);
   if (mic) {
     mic.stop(); //기존 마이크 중지
   }
