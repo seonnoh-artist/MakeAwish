@@ -106,7 +106,7 @@ function detectDevice() {
   const isIphone = ua.includes("iphone");
 
   if (isIpad) {
-    micSensitivity = 0.1; //0.005
+    micSensitivity = 0.01; //0.005
     log_str = "iPad";
     deviceNum = 0;  //아이패드
   } else if (isIphone) {
@@ -123,14 +123,14 @@ function detectDevice() {
 }
 
 function printLog() {
-  /*
+  
   fill(255);
   textSize(20);
   text(log_str, 100, 100);
   let volume_str = mic.getLevel();
   text("vol: " + nf(volume_str, 1, 6), 100, 300);
   text("satrtHour: " + startHour, 100, 200);
-  text("endHour: " + endHour, 100, 250);*/
+  text("endHour: " + endHour, 100, 250);
 }
 
 
@@ -266,6 +266,9 @@ function monitorMic() {
 
 
 function draw() {
+
+
+
 
   /*  // 설정시간 로그 
   fill(255);
@@ -541,6 +544,9 @@ function draw() {
     handleReleased(); // 터치가 끝난 것으로 간주합니다. 
     touch_chk = false;
   }
+
+
+    printLog();// 함수값 찍어본다. 
 }
 
 if ('serviceWorker' in navigator) {
