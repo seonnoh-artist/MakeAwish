@@ -108,12 +108,15 @@ function detectDevice() {
   if (isIpad) {
     micSensitivity = 0.005*5; //0.005
     log_str = "iPad";
+    deviceNum = 0;  //아이패드
   } else if (isIphone) {
     micSensitivity = 0.05;
     log_str = "iPhone";
+    deviceNum =1; //아이폰
   } else {
     micSensitivity = 0.01;
     log_str = "ETC";
+    deviceNum =2; //기타
   }
 
   console.log("Device detected → micSensitivity:", micSensitivity);
