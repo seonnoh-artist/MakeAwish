@@ -126,7 +126,6 @@ function printLog() {
   
   fill(255);
   textSize(20);
-  text(log_str, 100, 100);
   let volume_str = mic.getLevel();
   text("vol: " + nf(volume_str, 1, 6), 100, 300);
   text("satrtHour: " + startHour, 100, 200);
