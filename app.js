@@ -545,7 +545,7 @@ function draw() {
   }
 
 
-    printLog();// 함수값 찍어본다. 
+  //  printLog();// 함수값 찍어본다. 
 }
 
 if ('serviceWorker' in navigator) {
