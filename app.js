@@ -94,7 +94,7 @@ let green_value = 0; // 투명
 let stroke_value = 1;
 let waveAmp = 0; // 현재 파도 크기
 let decayRate = 0.95 // 작아지는 속도 0.95
-let lastRestartedTime=0;
+let lastRestartedTime = 0;
 
 
 // ==================== 기기 감지 ====================
@@ -105,7 +105,7 @@ function detectDevice() {
   const isIphone = ua.includes("iphone");
 
   if (isIpad) {
-    micSensitivity = 0.0005; //0.005
+    micSensitivity = 0.005; //0.005
     log_str = "iPad";
   } else if (isIphone) {
     micSensitivity = 0.05;
@@ -447,12 +447,12 @@ function draw() {
   // 마이크 베리에이션 
 
   //소리가 클때만 waveAmp갱신
-  let volPower = pow(vol, 1.5)*300;
-  if(volPower >waveAmp){
-     waveAmp = volPower;
+  let volPower = pow(vol, 1.5) * 300;
+  if (volPower > waveAmp) {
+    waveAmp = volPower;
   }
 
-  waveAmp *=decayRate; // 시간에 따라 소리가 작아진다. 
+  waveAmp *= decayRate; // 시간에 따라 소리가 작아진다. 
 
   vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
   x_value = max(10, 30 - vol_wave_scale * 10); // 진폭을 마이크값으로 조정
@@ -465,11 +465,11 @@ function draw() {
   noFill();
   strokeJoin(ROUND); //선을 부드럽게
   //stroke(0, 160, 180, alpha);*/
-  let b = map(vol, 0,micSensitivity, 200, 255 ); //blue
+  let b = map(vol, 0, micSensitivity, 200, 255); //blue
   b = 255;
   let g = map(vol, 0, micSensitivity, 100, 200); //green
-//  let a = map(vol, 0, micSensitivity, 100, 255);//alpha
-  a=40;
+  //  let a = map(vol, 0, micSensitivity, 100, 255);//alpha
+  a = 40;
   //stroke(0, g, b, a); //어두운 청록 ~밝은 푸른빛 
 
 
