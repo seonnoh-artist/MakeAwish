@@ -95,6 +95,7 @@ let stroke_value = 1;
 let waveAmp = 0; // 현재 파도 크기
 let decayRate = 0.95 // 작아지는 속도 0.95
 let lastRestartedTime = 0;
+let deviceNum = 0; // 0: 아이패드 , 1 :아이폰, 2: ETC
 
 
 // ==================== 기기 감지 ====================
@@ -105,7 +106,7 @@ function detectDevice() {
   const isIphone = ua.includes("iphone");
 
   if (isIpad) {
-    micSensitivity = 0.01; //0.005
+    micSensitivity = 0.005*5; //0.005
     log_str = "iPad";
   } else if (isIphone) {
     micSensitivity = 0.05;
@@ -454,9 +455,16 @@ function draw() {
 
   waveAmp *= decayRate; // 시간에 따라 소리가 작아진다. 
 
+  vol = constrain(vol, 0, 1); // 값이 튀지않게 제한한다. 
+
+  //deviceNum = 0 ; // 0: 아이패드 , 1 :아이폰, 2: ETC
+  if (deviceNum == 0) {  // 아이패드인 경우 소리값 5배 증폭시킨다. 
+    vol = vol * 5;
+    vol = constrain(vol, 0, 1); // 값이 튀지않게 제한한다. 
+  }
   vol_wave_scale = map(vol, 0, micSensitivity, 0, 1, true);
   x_value = max(10, 30 - vol_wave_scale * 10); // 진폭을 마이크값으로 조정
- // waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
+  // waveHeight = map(vol, 0, micSensitivity, 30, 300, true); // 파도의 높이를 마이크로 조정
   waveHeight = vol_wave_scale * 100; //ㅅㄷㄴㅅ
   green_value = map(vol_wave_scale, 0, 1, 160, 180); // 투명도   
   stroke_value = max(1, 1 + vol_wave_scale);
